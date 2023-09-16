@@ -11,14 +11,22 @@ import java.util.*;
 @Service
 public class EmployeeService {
     int maxEmployee = 10;
-    Map<String, Employee> employees = new HashMap<>(Map.of(
+    private final Map<String, Employee> employees = new HashMap<>(Map.of(
             "1", new Employee("Alex", "Davletov", 1, 50000),
             "2", new Employee("Sergey", "Bert", 1, 20000),
             "3", new Employee("Ken", "Durg", 5, 10000),
             "4", new Employee("Bob", "Bond", 4, 40000),
             "5", new Employee("Jon", "sd", 4, 60000),
             "6", new Employee("Michael", "lastName", 1, 70000)));
-    Departments departments = new Departments();
+    private final Departments departments;
+
+    public EmployeeService(Departments departments) {
+        this.departments = departments;
+    }
+
+    public Map<String, Employee> getEmployees() {
+        return employees;
+    }
 
     //Добавить сотрудника
     public Employee addEmployee(String firstName, String lastName, Integer departmentId, double salary) {

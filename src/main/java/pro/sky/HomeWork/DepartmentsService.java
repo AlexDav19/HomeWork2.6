@@ -2,45 +2,50 @@ package pro.sky.HomeWork;
 
 import org.springframework.stereotype.Service;
 import pro.sky.HomeWork.exception.DepartmentNotFoundException;
+import pro.sky.HomeWork.exception.EmployeeNotFoundException;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DepartmentsService {
-    EmployeeService employeeService = new EmployeeService();
-    Departments departments = new Departments();
+    private final EmployeeService employeeService;
+    private final Departments departments;
+
+    public DepartmentsService(EmployeeService employeeService, Departments departments) {
+        this.employeeService = employeeService;
+        this.departments = departments;
+    }
 
     //Сотрудника с минимальной зарплатой в отделе.
-    public Optional<Employee> findMinSalaryInDepartment(Integer departmentId) {
+    public Employee findMinSalaryInDepartment(Integer departmentId) {
         checkDepartment(departmentId);
-        return employeeService.employees.values().stream()
+        return employeeService.getEmployees().values().stream()
                 .filter(employee -> departmentId == employee.getDepartment())
-                .min(Comparator.comparingDouble(Employee::getSalary));
+                .min(Comparator.comparingDouble(Employee::getSalary))
+                .orElseThrow(() -> new EmployeeNotFoundException("Сотрудник не найден"));
     }
 
     //Сотрудника с максимальной зарплатой в отделе.
-    public Optional<Employee> findMaxSalaryInDepartment(Integer departmentId) {
+    public Employee findMaxSalaryInDepartment(Integer departmentId) {
         checkDepartment(departmentId);
-        return employeeService.employees.values().stream()
+        return employeeService.getEmployees().values().stream()
                 .filter(employee -> departmentId == employee.getDepartment())
-                .max(Comparator.comparingDouble(Employee::getSalary));
+                .max(Comparator.comparingDouble(Employee::getSalary))
+                .orElseThrow(() -> new EmployeeNotFoundException("Сотрудник не найден"));
     }
 
     //Напечатать всех сотрудников отдела или по отделам.
     public List<Employee> getAllEmployeeInDepartment(Integer departmentId) {
-        List<Employee> result;
-        if (departmentId == null) {
-            result = employeeService.employees.values().stream().sorted(Comparator.comparingInt(Employee::getDepartment))
-                    .collect(Collectors.toList());
+        checkDepartment(departmentId);
+        return employeeService.getEmployees().values().stream()
+                .filter(employee -> departmentId == employee.getDepartment())
+                .collect(Collectors.toList());
+    }
 
-        } else {
-            checkDepartment(departmentId);
-            result = employeeService.employees.values().stream()
-                    .filter(employee -> departmentId == employee.getDepartment())
-                    .collect(Collectors.toList());
-        }
-        return result;
+    public Map<Integer, List<Employee>> getAllEmployeeInDepartment() {
+        return employeeService.getEmployees().values().stream().sorted(Comparator.comparingInt(Employee::getDepartment))
+                .collect(Collectors.groupingBy(Employee::getDepartment));
     }
 
     //Проверка правильности отдела
