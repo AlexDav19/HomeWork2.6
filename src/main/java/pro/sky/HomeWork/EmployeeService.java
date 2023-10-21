@@ -1,10 +1,8 @@
 package pro.sky.HomeWork;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import pro.sky.HomeWork.exception.DepartmentNotFoundException;
-import pro.sky.HomeWork.exception.EmployeeAlreadyAddedException;
-import pro.sky.HomeWork.exception.EmployeeNotFoundException;
-import pro.sky.HomeWork.exception.EmployeeStorageIsFullException;
+import pro.sky.HomeWork.exception.*;
 
 import java.util.*;
 
@@ -30,6 +28,7 @@ public class EmployeeService {
 
     //Добавить сотрудника
     public Employee addEmployee(String firstName, String lastName, Integer departmentId, double salary) {
+        validateInput(firstName, lastName);
         if (employees.size() >= maxEmployee) {
             throw new EmployeeStorageIsFullException("Превышен лимит");
         } else if (employees.containsKey(firstName + " " + lastName)) {
@@ -45,6 +44,7 @@ public class EmployeeService {
 
     //Удалить сотрудника
     public Employee removeEmployee(String firstName, String lastName) {
+        validateInput(firstName, lastName);
         findEmployee(firstName, lastName);      //проверка есть ли такой сотрудник
         Employee result = employees.get(firstName + " " + lastName);    //Сохранение, чтобы вернуть после удаления
         employees.remove(firstName + " " + lastName);
@@ -53,6 +53,7 @@ public class EmployeeService {
 
     //Найти сотрудника
     public Employee findEmployee(String firstName, String lastName) {
+        validateInput(firstName, lastName);
         if (employees.containsKey(firstName + " " + lastName)) {
             return employees.get(firstName + " " + lastName);
         }
@@ -62,5 +63,12 @@ public class EmployeeService {
     //Показать всех сотрудников
     public Map<String, Employee> getAllEmployee() {
         return employees;
+    }
+
+    //Проверка имени и фамилии
+    private void validateInput(String firstName, String lastName) {
+        if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
+            throw new ValidationException("В имени и фамилии должны быть только буквы");
+        }
     }
 }
