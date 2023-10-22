@@ -8,23 +8,17 @@ import java.util.*;
 
 @Service
 public class EmployeeService {
-    int maxEmployee = 10;
-    private final Map<String, Employee> employees = new HashMap<>(Map.of(
-            "1", new Employee("Alex", "Davletov", 1, 50000),
-            "2", new Employee("Sergey", "Bert", 1, 20000),
-            "3", new Employee("Ken", "Durg", 5, 10000),
-            "4", new Employee("Bob", "Bond", 4, 40000),
-            "5", new Employee("Jon", "sd", 4, 60000),
-            "6", new Employee("Michael", "lastName", 1, 70000)));
-    private final Departments departments;
+    int maxEmployee = 6;
+    private final Map<String, Employee> employees = new HashMap<>();
+    //private final Departments departments;
 
-    public EmployeeService(Departments departments) {
-        this.departments = departments;
-    }
+//    public EmployeeService(Departments departments) {
+//        this.departments = departments;
+//    }
 
-    public Map<String, Employee> getEmployees() {
-        return employees;
-    }
+//    public Map<String, Employee> getEmployees() {
+//        return employees;
+//    }
 
     //Добавить сотрудника
     public Employee addEmployee(String firstName, String lastName, Integer departmentId, double salary) {
@@ -33,8 +27,8 @@ public class EmployeeService {
             throw new EmployeeStorageIsFullException("Превышен лимит");
         } else if (employees.containsKey(firstName + " " + lastName)) {
             throw new EmployeeAlreadyAddedException("Такой сотрудник уже есть");
-        } else if (!departments.getDepartments().contains(departmentId)) {
-            throw new DepartmentNotFoundException("Нет такого отдела");
+//        } else if (!departments.getDepartments().contains(departmentId)) {
+//            throw new DepartmentNotFoundException("Нет такого отдела");
         } else {
             Employee e = new Employee(firstName, lastName, departmentId, salary);
             employees.put(firstName + " " + lastName, e);
@@ -66,7 +60,7 @@ public class EmployeeService {
     }
 
     //Проверка имени и фамилии
-    private void validateInput(String firstName, String lastName) {
+    public void validateInput(String firstName, String lastName) {
         if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
             throw new ValidationException("В имени и фамилии должны быть только буквы");
         }
